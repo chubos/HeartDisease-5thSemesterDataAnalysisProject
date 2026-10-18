@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f3efe6;
+  --color-ink: #1f1a17;
+  --color-muted: #6f655e;
+  --color-line: #e3dbd0;
+  --color-brick: #8d3830;
+  --color-card: #fffcf8;
+  --font-serif: "Iowan Old Style", Palatino, Georgia, serif;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
