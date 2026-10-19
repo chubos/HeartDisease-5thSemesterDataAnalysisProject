@@ -1,5 +1,3 @@
-"""API, które przyjmuje dane pacjenta i zwraca wynik zapisanego modelu."""
-
 from pathlib import Path
 
 import joblib
@@ -9,13 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.schemas import FEATURES, PatientFeatures, PredictionResponse
 
-# backend/app/main.py -> katalog główny repozytorium -> ml/models/...
 MODEL_PATH = Path(__file__).resolve().parents[2] / "ml" / "models" / "heart_model.joblib"
 
 app = FastAPI(title="Heart Disease API")
 
-# Frontend na Vite działa pod innym portem niż API, więc przeglądarka
-# potrzebuje zgody CORS. Gwiazdka jest wygodna na czas projektu uczelnianego.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

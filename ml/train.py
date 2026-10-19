@@ -1,5 +1,3 @@
-"""Trenuje klasyfikator choroby serca i zapisuje go do jednego pliku."""
-
 from pathlib import Path
 
 import joblib
@@ -29,23 +27,26 @@ FEATURES = [
 ]
 TARGET = "target"
 
-DATA_PATH = Path(__file__).parent / "data" / "heart.csv"
+DATA_PATH = Path(__file__).parent / "data" / "processed.cleveland.data"
 MODEL_PATH = Path(__file__).parent / "models" / "heart_model.joblib"
+# Plik UCI nie ma nagłówka. Ostatnia kolumna to num (0–4), z niej robimy target.
+RAW_COLUMNS = FEATURES + ["num"]
 
 
 def load_data(path: Path) -> pd.DataFrame:
-    """Wczytuje CSV i sprawdza, czy są w nim kolumny wymagane przez model."""
+    """Wczytuje processed.cleveland.data i zamienia diagnozę num na klasy 0 i 1.
+
+    W pliku nie ma nazw kolumn, a braki są zapisane jako znak '?'.
+    num równe 0 oznacza brak choroby, wartości 1–4 jej obecność.
+    """
     if not path.exists():
         raise FileNotFoundError(
-            "Brak pliku ml/data/heart.csv. Pobierz zbiór Heart Disease "
-            "(kolumny jak w FEATURES plus target) i zapisz go pod tą ścieżką."
+            "Brak pliku ml/data/processed.cleveland.data. "
         )
 
-    frame = pd.read_csv(path)
-    missing = [column for column in FEATURES + [TARGET] if column not in frame.columns]
-    if missing:
-        raise ValueError(f"W CSV brakuje kolumn: {', '.join(missing)}")
-    return frame
+    frame = pd.read_csv(path, header=None, names=RAW_COLUMNS, na_values="?")
+    frame[TARGET] = (frame["num"] > 0).astype(int)
+    return frame.drop(columns=["num"])
 
 
 def build_pipeline() -> Pipeline:

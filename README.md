@@ -1,22 +1,20 @@
-# Przewidywanie chorób serca
+# Przewidywanie wystąpienia chorób serca
 
-Projekt uczelniany: klasyfikacja choroby serca na podstawie danych klinicznych.
+Klasyfikacja choroby serca na podstawie danych klinicznych.
 
-Trzy foldery, każdy z jedną rolą:
+Podział projektu:
 
-- `ml` — trenuje model i zapisuje go do pliku.
-- `backend` — FastAPI wczytuje ten plik i wystawia endpoint `/predict`.
+- `ml` — trenowanie modelu i zapis do pliku.
+- `backend` — FastAPI - endpoint `/predict`.
 - `frontend` — formularz w React, który wysyła dane pacjenta do API.
 
-Model to `sklearn.pipeline.Pipeline`: uzupełnienie braków, skalowanie i regresja logistyczna. Regresja logistyczna jest celowo prostym pierwszym modelem, bo da się potem opisać jej współczynniki.
+Model to `sklearn.pipeline.Pipeline`: uzupełnienie braków, skalowanie i regresja logistyczna.
 
 ## Dane
 
-Potrzebny jest plik `ml/data/heart.csv` z nagłówkiem i kolumnami:
+Pipeline przetwarza `ml/data/processed.cleveland.data` z archiwum UCI. Są to 303 wiersze i 14 kolumn, bez nagłówka. Braki są zapisane jako `?`.
 
-`age`, `sex`, `cp`, `trestbps`, `chol`, `fbs`, `restecg`, `thalach`, `exang`, `oldpeak`, `slope`, `ca`, `thal`, `target`
-
-Pasuje oczyszczony zbiór Heart Disease (UCI Cleveland / popularny plik z Kaggle o tych nazwach kolumn). `target` równe `1` oznacza chorobę, `0` jej brak.
+Ostatnia kolumna `num` ma wartości 0–4. W `load_data` powstaje z niej `target`: 0 zostaje brakiem choroby, a 1–4 stają się jedną klasą „choroba”.
 
 ## Uruchomienie lokalne
 
@@ -28,7 +26,7 @@ source .venv/bin/activate
 pip install -r ml/requirements.txt -r backend/requirements.txt
 ```
 
-Trening, gdy plik CSV już leży w `ml/data/`:
+Trening:
 
 ```bash
 python ml/train.py
@@ -40,7 +38,7 @@ API (z katalogu głównego repozytorium):
 uvicorn app.main:app --app-dir backend --reload --port 8000
 ```
 
-Dokumentacja interaktywna: http://127.0.0.1:8000/docs
+Dokumentacja Swagger: http://127.0.0.1:8000/docs
 
 Frontend:
 
@@ -50,9 +48,7 @@ npm install
 npm run dev
 ```
 
-Aplikacja: http://127.0.0.1:5173
-
-Po każdym nowym treningu uruchom API ponownie. Serwer trzyma model w pamięci i sam nie podmienia pliku.
+Aplikacja: http://127.0.0.1:5174
 
 ## Render
 
@@ -64,7 +60,7 @@ API (Web Service, Python):
 - Build: `pip install -r backend/requirements.txt`
 - Start: `uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT`
 
-Żeby API umiało odpowiadać, w repozytorium musi być `ml/models/heart_model.joblib`. Trening zostaje na Twoim komputerze, a na Render wjeżdża gotowy plik modelu.
+W repozytorium musi się znajdować `ml/models/heart_model.joblib`. Na Render zostaje wysłany gotowy plik modelu.
 
 Frontend (Static Site):
 
@@ -73,4 +69,4 @@ Frontend (Static Site):
 - Publish directory: `dist`
 - Zmienna środowiskowa `VITE_API_URL`: publiczny adres API, bez ukośnika na końcu
 
-Wynik z formularza jest edukacyjny i nie jest diagnozą medyczną.
+Wynik z formularza powstaje jedynie w celach edukacyjnych i nie jest diagnozą medyczną.

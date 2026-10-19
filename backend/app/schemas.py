@@ -1,4 +1,4 @@
-"""Kształt danych wejściowych i odpowiedzi API."""
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -25,7 +25,7 @@ class PatientFeatures(BaseModel):
 
     age: int = Field(ge=1, le=120)
     sex: int = Field(ge=0, le=1)
-    cp: int = Field(ge=0, le=3)
+    cp: Literal[1, 2, 3, 4]
     trestbps: int = Field(ge=1, le=300)
     chol: int = Field(ge=1, le=700)
     fbs: int = Field(ge=0, le=1)
@@ -33,9 +33,9 @@ class PatientFeatures(BaseModel):
     thalach: int = Field(ge=1, le=250)
     exang: int = Field(ge=0, le=1)
     oldpeak: float = Field(ge=0, le=10)
-    slope: int = Field(ge=0, le=2)
-    ca: int = Field(ge=0, le=4)
-    thal: int = Field(ge=0, le=3)
+    slope: Literal[1, 2, 3]
+    ca: int = Field(ge=0, le=3)
+    thal: Literal[3, 6, 7]
 
 
 class PredictionResponse(BaseModel):

@@ -17,210 +17,8 @@ const INITIAL_FORM = {
   thal: "",
 };
 
-// Opis pól formularza. Nazwy zgadzają się z kolumnami w ml/train.py.
-const FIELDS = [
-  {
-    name: "age",
-    label: "Wiek",
-    type: "number",
-    min: 1,
-    max: 120,
-    about: "Liczba lat pacjenta.",
-    norm: "W zbiorze zwykle 29–77 lat. Osobnej normy laboratoryjnej nie ma; ryzyko rośnie z wiekiem.",
-  },
-  {
-    name: "sex",
-    label: "Płeć",
-    type: "select",
-    about: "Płeć zapisana kodem zbioru: 0 to kobieta, 1 to mężczyzna.",
-    norm: "To cecha, nie wynik badania. W tych danych choroba częściej dotyczy mężczyzn.",
-    options: [
-      ["0", "Kobieta"],
-      ["1", "Mężczyzna"],
-    ],
-  },
-  {
-    name: "cp",
-    label: "Typ bólu w klatce",
-    type: "select",
-    about: "Rodzaj bólu w klatce piersiowej zgłoszony przy przyjęciu.",
-    norm: "Brak jednej wartości prawidłowej. Typowa dławica i postać bezobjawowa częściej współwystępują z chorobą.",
-    options: [
-      ["0", "Typowa dławica"],
-      ["1", "Nietypowa dławica"],
-      ["2", "Ból niedławicowy"],
-      ["3", "Bezobjawowy"],
-    ],
-  },
-  {
-    name: "trestbps",
-    label: "Ciśnienie spoczynkowe",
-    unit: "mm Hg",
-    type: "number",
-    min: 1,
-    max: 300,
-    about: "Skurczowe ciśnienie tętnicze mierzone w spoczynku.",
-    norm: "Prawidłowe jest poniżej 120 mm Hg. Od 130 mm Hg mówi się o nadciśnieniu.",
-  },
-  {
-    name: "chol",
-    label: "Cholesterol",
-    unit: "mg/dl",
-    type: "number",
-    min: 1,
-    max: 700,
-    about: "Cholesterol całkowity w surowicy.",
-    norm: "Pożądany poziom to poniżej 200 mg/dl. Zakres 200–239 jest graniczny, od 240 wysoki.",
-  },
-  {
-    name: "fbs",
-    label: "Cukier na czczo",
-    type: "select",
-    about: "Czy glukoza na czczo przekracza próg 120 mg/dl użyty w zbiorze.",
-    norm: "Prawidłowa glukoza na czczo jest poniżej 100 mg/dl. Od 126 mg/dl rozpoznaje się cukrzycę.",
-    options: [
-      ["0", "Nie, do 120 mg/dl"],
-      ["1", "Tak, powyżej 120 mg/dl"],
-    ],
-  },
-  {
-    name: "restecg",
-    label: "EKG spoczynkowe",
-    type: "select",
-    about: "Wynik elektrokardiogramu wykonanego w spoczynku.",
-    norm: "Zapis bez zmian. Zmiany ST-T i przerost lewej komory są odchyleniami.",
-    options: [
-      ["0", "W normie"],
-      ["1", "Nieprawidłowość ST-T"],
-      ["2", "Przerost lewej komory"],
-    ],
-  },
-  {
-    name: "thalach",
-    label: "Maksymalne tętno",
-    unit: "uderzenia/min",
-    type: "number",
-    min: 1,
-    max: 250,
-    about: "Najwyższe tętno osiągnięte w próbie wysiłkowej.",
-    norm: "Orientacyjne maksimum to około 220 minus wiek. Wyraźnie niższy wynik bywa niekorzystny.",
-  },
-  {
-    name: "exang",
-    label: "Dławica wysiłkowa",
-    type: "select",
-    about: "Czy w czasie wysiłku pojawił się ból dławicowy.",
-    norm: "Brak dławicy.",
-    options: [
-      ["0", "Nie"],
-      ["1", "Tak"],
-    ],
-  },
-  {
-    name: "oldpeak",
-    label: "Obniżenie ST",
-    unit: "mm",
-    type: "number",
-    min: 0,
-    max: 10,
-    step: "0.1",
-    about: "O ile milimetrów odcinek ST obniżył się względem spoczynku.",
-    norm: "0 mm. Od około 1 mm obniżenie jest istotne, powyżej 2 mm wyraźnie nieprawidłowe.",
-  },
-  {
-    name: "slope",
-    label: "Nachylenie ST",
-    type: "select",
-    about: "Kształt odcinka ST w szczycie wysiłku.",
-    norm: "Najłagodniejsze jest nachylenie wznoszące. Płaskie i opadające są niekorzystne.",
-    options: [
-      ["0", "Wznoszące"],
-      ["1", "Płaskie"],
-      ["2", "Opadające"],
-    ],
-  },
-  {
-    name: "ca",
-    label: "Główne naczynia",
-    type: "select",
-    about: "Liczba głównych tętnic wieńcowych ze zwężeniem widocznym we fluoroskopii.",
-    norm: "0 naczyń. Im wyższa liczba, tym rozleglejsza choroba. Wartość 4 zwykle oznacza brak danych.",
-    options: ["0", "1", "2", "3", "4"].map((value) => [value, value]),
-  },
-  {
-    name: "thal",
-    label: "Scyntygrafia talowa",
-    type: "select",
-    about: "Wynik badania ukrwienia mięśnia sercowego z użyciem talu.",
-    norm: "Wynik prawidłowy. Utrwalony albo odwracalny defekt oznacza gorsze ukrwienie.",
-    options: [
-      ["0", "Nieznany"],
-      ["1", "Prawidłowy"],
-      ["2", "Utrwalony defekt"],
-      ["3", "Odwracalny defekt"],
-    ],
-  },
-];
-
 const inputClass =
   "w-full border border-line bg-white px-3 py-2 text-ink outline-none focus:border-red";
-
-// Rysuje jedno pole formularza razem z opisem parametru i jego normą.
-function Field({ field, value, onChange }) {
-  const id = `field-${field.name}`;
-  const hintId = `${id}-hint`;
-
-  return (
-    <div className="border-t border-line py-10">
-      <div className="mb-2 flex items-baseline justify-between gap-4">
-        <label htmlFor={id} className="text-sm font-medium">
-          {field.label}
-          {field.unit ? <span className="font-normal text-muted">, {field.unit}</span> : null}
-        </label>
-        <span className="text-xs tracking-wide text-red uppercase">{field.name}</span>
-      </div>
-      {field.type === "select" ? (
-        <select
-          id={id}
-          name={field.name}
-          value={value}
-          onChange={onChange}
-          required
-          aria-describedby={hintId}
-          className={inputClass}
-        >
-          <option value="">Wybierz</option>
-          {field.options.map(([optionValue, optionLabel]) => (
-            <option key={optionValue} value={optionValue}>
-              {optionLabel}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          id={id}
-          name={field.name}
-          type="number"
-          min={field.min}
-          max={field.max}
-          step={field.step ?? "1"}
-          value={value}
-          onChange={onChange}
-          required
-          aria-describedby={hintId}
-          className={inputClass}
-        />
-      )}
-      <p id={hintId} className="mt-4 text-sm leading-relaxed text-muted">
-        {field.about}
-        <span className="mt-2 block text-ink">
-          <span className="text-red">Norma. </span>
-          {field.norm}
-        </span>
-      </p>
-    </div>
-  );
-}
 
 function App() {
   const [form, setForm] = useState(INITIAL_FORM);
@@ -257,9 +55,21 @@ function App() {
     setResult(null);
     setLoading(true);
 
-    const patient = Object.fromEntries(
-      Object.entries(form).map(([name, value]) => [name, Number(value)]),
-    );
+    const patient = {
+      age: Number(form.age),
+      sex: Number(form.sex),
+      cp: Number(form.cp),
+      trestbps: Number(form.trestbps),
+      chol: Number(form.chol),
+      fbs: Number(form.fbs),
+      restecg: Number(form.restecg),
+      thalach: Number(form.thalach),
+      exang: Number(form.exang),
+      oldpeak: Number(form.oldpeak),
+      slope: Number(form.slope),
+      ca: Number(form.ca),
+      thal: Number(form.thal),
+    };
 
     try {
       setResult(await predictHeartDisease(patient));
@@ -274,17 +84,354 @@ function App() {
     <>
       <div className="h-1 bg-red" />
       <main className="mx-auto min-h-screen max-w-xl px-5 py-12 text-ink">
-        <p className="text-xs tracking-[0.18em] text-red uppercase">Projekt uczelniany</p>
+        <p className="text-xs tracking-[0.18em] text-red uppercase">Techniki Analizy Danych</p>
         <h1 className="mt-3 text-3xl font-medium tracking-tight">Przewidywanie chorób serca</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Każdy parametr ma krótki opis i orientacyjną normę. Wynik modelu służy do nauki i nie jest diagnozą.
+          Wynik modelu służy do nauki i nie jest diagnozą.
         </p>
         <p className="mt-4 text-sm">{status}</p>
 
         <form onSubmit={handleSubmit} autoComplete="off" className="mt-10 flex flex-col gap-8">
-          {FIELDS.map((field) => (
-            <Field key={field.name} field={field} value={form[field.name]} onChange={handleChange} />
-          ))}
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="age" className="text-sm font-medium">
+                Wiek
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">age</span>
+            </div>
+            <input
+              id="age"
+              name="age"
+              type="number"
+              min={1}
+              max={120}
+              value={form.age}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            />
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Liczba lat pacjenta.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                W zbiorze zwykle 29–77 lat. Ryzyko rośnie z wiekiem.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="sex" className="text-sm font-medium">
+                Płeć
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">sex</span>
+            </div>
+            <select
+              id="sex"
+              name="sex"
+              value={form.sex}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            >
+              <option value="">Wybierz</option>
+              <option value="0">Kobieta</option>
+              <option value="1">Mężczyzna</option>
+            </select>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Płeć: 0 to kobieta, 1 to mężczyzna.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Według danych choroba częściej dotyczy mężczyzn.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="cp" className="text-sm font-medium">
+                Typ bólu w klatce
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">cp</span>
+            </div>
+            <select id="cp" name="cp" value={form.cp} onChange={handleChange} required className={inputClass}>
+              <option value="">Wybierz</option>
+              <option value="1">Typowa dławica</option>
+              <option value="2">Nietypowa dławica</option>
+              <option value="3">Ból niedławicowy</option>
+              <option value="4">Bezobjawowy</option>
+            </select>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Rodzaj bólu w klatce piersiowej. Kody 1–4 są takie jak w pliku UCI.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Brak jednej wartości prawidłowej. Typowa dławica i postać bezobjawowa częściej współwystępują z
+                chorobą.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="trestbps" className="text-sm font-medium">
+                Ciśnienie spoczynkowe<span className="font-normal text-muted">, mm Hg</span>
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">trestbps</span>
+            </div>
+            <input
+              id="trestbps"
+              name="trestbps"
+              type="number"
+              min={1}
+              max={300}
+              value={form.trestbps}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            />
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Skurczowe ciśnienie tętnicze mierzone w spoczynku.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Prawidłowe jest poniżej 120 mm Hg. Od 130 mm Hg mówi się o nadciśnieniu.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="chol" className="text-sm font-medium">
+                Cholesterol<span className="font-normal text-muted">, mg/dl</span>
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">chol</span>
+            </div>
+            <input
+              id="chol"
+              name="chol"
+              type="number"
+              min={1}
+              max={700}
+              value={form.chol}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            />
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Cholesterol całkowity w surowicy.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Pożądany poziom to poniżej 200 mg/dl. Zakres 200–239 jest graniczny, od 240 wysoki.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="fbs" className="text-sm font-medium">
+                Cukier na czczo
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">fbs</span>
+            </div>
+            <select id="fbs" name="fbs" value={form.fbs} onChange={handleChange} required className={inputClass}>
+              <option value="">Wybierz</option>
+              <option value="0">Nie, do 120 mg/dl</option>
+              <option value="1">Tak, powyżej 120 mg/dl</option>
+            </select>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Czy glukoza na czczo przekracza próg 120 mg/dl użyty w zbiorze.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Prawidłowa glukoza na czczo jest poniżej 100 mg/dl. Od 126 mg/dl rozpoznaje się cukrzycę.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="restecg" className="text-sm font-medium">
+                EKG spoczynkowe
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">restecg</span>
+            </div>
+            <select
+              id="restecg"
+              name="restecg"
+              value={form.restecg}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            >
+              <option value="">Wybierz</option>
+              <option value="0">W normie</option>
+              <option value="1">Nieprawidłowość ST-T</option>
+              <option value="2">Przerost lewej komory</option>
+            </select>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Wynik elektrokardiogramu wykonanego w spoczynku.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Zapis bez zmian. Zmiany ST-T i przerost lewej komory są odchyleniami.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="thalach" className="text-sm font-medium">
+                Maksymalne tętno<span className="font-normal text-muted">, uderzenia/min</span>
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">thalach</span>
+            </div>
+            <input
+              id="thalach"
+              name="thalach"
+              type="number"
+              min={1}
+              max={250}
+              value={form.thalach}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            />
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Najwyższe tętno osiągnięte w próbie wysiłkowej.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Orientacyjne maksimum to około 220 minus wiek. Wyraźnie niższy wynik bywa niekorzystny.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="exang" className="text-sm font-medium">
+                Dławica wysiłkowa
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">exang</span>
+            </div>
+            <select
+              id="exang"
+              name="exang"
+              value={form.exang}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            >
+              <option value="">Wybierz</option>
+              <option value="0">Nie</option>
+              <option value="1">Tak</option>
+            </select>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Czy w czasie wysiłku pojawił się ból dławicowy.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Brak dławicy.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="oldpeak" className="text-sm font-medium">
+                Obniżenie ST<span className="font-normal text-muted">, mm</span>
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">oldpeak</span>
+            </div>
+            <input
+              id="oldpeak"
+              name="oldpeak"
+              type="number"
+              min={0}
+              max={10}
+              step="0.1"
+              value={form.oldpeak}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            />
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              O ile milimetrów odcinek ST obniżył się względem spoczynku.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                0 mm. Od około 1 mm obniżenie jest istotne, powyżej 2 mm wyraźnie nieprawidłowe.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="slope" className="text-sm font-medium">
+                Nachylenie ST
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">slope</span>
+            </div>
+            <select
+              id="slope"
+              name="slope"
+              value={form.slope}
+              onChange={handleChange}
+              required
+              className={inputClass}
+            >
+              <option value="">Wybierz</option>
+              <option value="1">Wznoszące</option>
+              <option value="2">Płaskie</option>
+              <option value="3">Opadające</option>
+            </select>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Kształt odcinka ST w szczycie wysiłku. W pliku UCI kody zaczynają się od 1.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Najłagodniejsze jest nachylenie wznoszące. Płaskie i opadające są niekorzystne.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="ca" className="text-sm font-medium">
+                Główne naczynia
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">ca</span>
+            </div>
+            <select id="ca" name="ca" value={form.ca} onChange={handleChange} required className={inputClass}>
+              <option value="">Wybierz</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Liczba głównych tętnic wieńcowych ze zwężeniem widocznym we fluoroskopii.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                0 naczyń. Im wyższa liczba, tym rozleglejsza choroba.
+              </span>
+            </p>
+          </div>
+
+          <div className="border-t border-line py-10">
+            <div className="mb-2 flex items-baseline justify-between gap-4">
+              <label htmlFor="thal" className="text-sm font-medium">
+                Scyntygrafia talowa
+              </label>
+              <span className="text-xs tracking-wide text-red uppercase">thal</span>
+            </div>
+            <select id="thal" name="thal" value={form.thal} onChange={handleChange} required className={inputClass}>
+              <option value="">Wybierz</option>
+              <option value="3">Prawidłowy</option>
+              <option value="6">Utrwalony defekt</option>
+              <option value="7">Odwracalny defekt</option>
+            </select>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Wynik scyntygrafii talowej. W pliku UCI prawidłowy wynik ma kod 3, nie 1.
+              <span className="mt-2 block text-ink">
+                <span className="text-red">Norma: </span>
+                Wynik prawidłowy. Utrwalony albo odwracalny defekt oznacza gorsze ukrwienie.
+              </span>
+            </p>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -302,7 +449,7 @@ function App() {
               {result.heart_disease ? "Model wskazuje chorobę serca" : "Model nie wskazuje choroby serca"}
             </h2>
             <p className="mt-1 text-sm text-muted">
-              Prawdopodobieństwo klasy „choroba”: {(result.probability * 100).toFixed(1)}%
+              Prawdopodobieństwo choroby serca: {(result.probability * 100).toFixed(1)}%
             </p>
           </section>
         ) : null}
