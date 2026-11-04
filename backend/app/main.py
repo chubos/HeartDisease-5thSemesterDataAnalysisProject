@@ -47,6 +47,8 @@ def health():
 @app.post("/predict", response_model=PredictionResponse)
 def predict(patient: PatientFeatures):
     """Zamienia dane pacjenta na wiersz tabeli i zwraca szansę choroby."""
+    print("Otrzymany JSON:", patient.model_dump_json())
+
     model = get_model()
     if model is None:
         raise HTTPException(status_code=503, detail="Model nie jest jeszcze wytrenowany.")

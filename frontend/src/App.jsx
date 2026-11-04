@@ -137,7 +137,7 @@ function App() {
               Liczba lat pacjenta.
               <span className="mt-2 block text-ink">
                 <span className="text-red">Norma: </span>
-                W zbiorze zwykle 29–77 lat. Ryzyko rośnie z wiekiem.
+                Zwykle 29–77 lat. Ryzyko rośnie z wiekiem.
               </span>
             </p>
           </div>
@@ -185,7 +185,7 @@ function App() {
               <option value="4">Bezobjawowy</option>
             </select>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              Rodzaj bólu w klatce piersiowej. Kody 1–4 są takie jak w pliku UCI.
+              Rodzaj bólu w klatce piersiowej.
               <span className="mt-2 block text-ink">
                 <span className="text-red">Norma: </span>
                 Brak jednej wartości prawidłowej. Typowa dławica i postać bezobjawowa częściej współwystępują z
@@ -402,7 +402,7 @@ function App() {
               <option value="3">Opadające</option>
             </select>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              Kształt odcinka ST w szczycie wysiłku. W pliku UCI kody zaczynają się od 1.
+              Kształt odcinka ST w szczycie wysiłku.
               <span className="mt-2 block text-ink">
                 <span className="text-red">Norma: </span>
                 Najłagodniejsze jest nachylenie wznoszące. Płaskie i opadające są niekorzystne.
@@ -447,7 +447,7 @@ function App() {
               <option value="7">Odwracalny defekt</option>
             </select>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              Wynik scyntygrafii talowej. W pliku UCI prawidłowy wynik ma kod 3, nie 1.
+              Wynik scyntygrafii talowej.
               <span className="mt-2 block text-ink">
                 <span className="text-red">Norma: </span>
                 Wynik prawidłowy. Utrwalony albo odwracalny defekt oznacza gorsze ukrwienie.
