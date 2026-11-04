@@ -20,6 +20,29 @@ const INITIAL_FORM = {
 const inputClass =
   "w-full border border-line bg-white px-3 py-2 text-ink outline-none focus:border-red";
 
+const HEART_PATH =
+  "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z";
+
+// Rysuje serce wypełnione od dołu o podany procent.
+function RiskHeart({ percent }) {
+  const level = Math.min(100, Math.max(0, percent));
+  const height = (24 * level) / 100;
+
+  return (
+    <svg viewBox="0 0 24 24" className="h-40 w-40" aria-hidden="true">
+      <defs>
+        <clipPath id="risk-heart">
+          <path d={HEART_PATH} />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#risk-heart)">
+        <rect width="24" height="24" fill="#f4d4d6" />
+        <rect y={24 - height} width="24" height={height} fill="#c1121f" />
+      </g>
+    </svg>
+  );
+}
+
 function App() {
   const [form, setForm] = useState(INITIAL_FORM);
   const [status, setStatus] = useState("Sprawdzam połączenie z API…");
@@ -442,18 +465,33 @@ function App() {
         </form>
 
         {error ? <p className="mt-6 border-l-2 border-red pl-3 text-sm text-red">{error}</p> : null}
+      </main>
 
-        {result ? (
-          <section className="mt-6 border-l-2 border-red pl-3">
-            <h2 className="text-lg font-medium">
+      {result ? (
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setResult(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="risk-title"
+            className="w-full max-w-sm bg-white px-6 py-8 text-center"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex justify-center">
+              <RiskHeart percent={result.probability * 100} />
+            </div>
+            <p className="mt-4 text-3xl font-medium text-red">{(result.probability * 100).toFixed(1)}%</p>
+            <h2 id="risk-title" className="mt-2 text-lg font-medium">
               {result.heart_disease ? "Model wskazuje chorobę serca" : "Model nie wskazuje choroby serca"}
             </h2>
-            <p className="mt-1 text-sm text-muted">
-              Prawdopodobieństwo choroby serca: {(result.probability * 100).toFixed(1)}%
-            </p>
-          </section>
-        ) : null}
-      </main>
+            <button type="button" className="mt-6 bg-red px-5 py-2.5 text-sm text-white" onClick={() => setResult(null)}>
+              Zamknij
+            </button>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
