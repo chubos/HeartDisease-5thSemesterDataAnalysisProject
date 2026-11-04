@@ -83,7 +83,7 @@ function App() {
   return (
     <>
       <div className="h-1 bg-red" />
-      <main className="mx-auto min-h-screen max-w-xl px-5 py-12 text-ink">
+      <main className="relative z-10 mx-auto min-h-screen max-w-xl bg-white px-5 py-12 text-ink">
         <p className="text-xs tracking-[0.18em] text-red uppercase">Techniki Analizy Danych</p>
         <h1 className="mt-3 text-3xl font-medium tracking-tight">Przewidywanie chorób serca</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
