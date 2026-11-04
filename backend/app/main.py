@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.schemas import FEATURES, PatientFeatures, PredictionResponse
 
-MODEL_PATH = Path(__file__).resolve().parents[2] / "ml" / "models" / "heart_model.joblib"
+MODEL_PATH = Path("ml/models/heart_model.joblib")
 
 app = FastAPI(title="Heart Disease API")
 
@@ -21,18 +21,8 @@ app.add_middleware(
 _model = None
 
 
-def positive_probability(model, row) -> float:
-    """Zwraca prawdopodobieństwo klasy 1, czyli obecności choroby."""
-    classes = list(model.named_steps["model"].classes_)
-    index = classes.index(1)
-    return float(model.predict_proba(row)[0, index])
-
-
 def get_model():
-    """Wczytuje wytrenowany Pipeline z pliku i przy kolejnych żądaniach używa kopii z pamięci.
-
-    Po ponownym treningu uruchom serwer jeszcze raz, żeby wczytać nowy plik.
-    """
+    """Wczytanie modelu z pliku. W kolejnych żądaniach używa kopii z pamięci."""
     global _model
     if _model is not None:
         return _model
@@ -44,7 +34,7 @@ def get_model():
 
 @app.get("/")
 def root():
-    """Krótka informacja, że API działa. Dokumentacja jest pod /docs."""
+    """Informacja o działaniu API. Dokumentacja Swagger jest pod /docs."""
     return {"message": "Heart Disease API", "docs": "/docs"}
 
 
@@ -56,15 +46,11 @@ def health():
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(patient: PatientFeatures):
-    """Zamienia dane pacjenta na wiersz tabeli i pyta model o klasę oraz prawdopodobieństwo."""
+    """Zamienia dane pacjenta na wiersz tabeli i zwraca szansę choroby."""
     model = get_model()
     if model is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Model nie jest jeszcze wytrenowany. Uruchom najpierw ml/train.py.",
-        )
+        raise HTTPException(status_code=503, detail="Model nie jest jeszcze wytrenowany.")
 
     row = pd.DataFrame([patient.model_dump()])[FEATURES]
-    disease = bool(model.predict(row)[0])
-    probability = positive_probability(model, row)
-    return PredictionResponse(heart_disease=disease, probability=round(probability, 4))
+    probability = float(model.predict_proba(row)[0, 1])
+    return PredictionResponse(heart_disease=probability >= 0.5, probability=round(probability, 4))

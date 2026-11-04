@@ -2,7 +2,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-# Ta sama kolejność kolumn jest w ml/train.py (lista FEATURES).
 FEATURES = [
     "age",
     "sex",
